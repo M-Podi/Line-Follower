@@ -1,229 +1,191 @@
-// Define a template-based Queue class
-template<typename T>
-class Queue {
-  // Nested node structure for a singly linked list representation of the queue
-private:
-  struct Node {
-    T data;
-    Node* next;
+#include <QTRSensors.h>
 
-    Node(T value)
-      : data(value), next(nullptr) {}
-  };
+// Motor control pin definitions
+const int m11Pin = 7;
+const int m12Pin = 6;
+const int m21Pin = 5;
+const int m22Pin = 4;
+const int m1Enable = 11;
+const int m2Enable = 10;
 
-  Node* front;  // pointer to the front node
-  Node* rear;   // pointer to the rear node
-  int size;     // size of the queue
+// Initial motor speeds
+int m1Speed = 0;
+int m2Speed = 0;
 
-public:
-  // Default constructor
-  Queue()
-    : front(nullptr), rear(nullptr), size(0) {}
+// PID control parameters
+float kp = 12.5;  // Proportional gain
+float ki = 0;     // Integral gain
+float kd = 5.5;   // Derivative gain
+int p = 1;        // Proportional error
+int i = 0;        // Integral error
+int d = 0;        // Derivative error
 
-  // Destructor to deallocate the memory used by the queue
-  ~Queue() {
-    while (!isEmpty()) {
-      dequeue();
-    }
+// Error values for PID control
+int error = 0;
+int lastError = 0;
+
+// Speed constants
+const int maxSpeed = 255;
+const int minSpeed = -255;
+const int baseSpeed = 255;
+
+// Calibration parameters
+unsigned int calibrationTime = 600;
+unsigned long lastCalibrationTime = 0;
+
+// Sensor setup
+QTRSensors qtr;
+const int sensorCount = 6;
+int sensorValues[sensorCount];
+int sensors[sensorCount] = { 0, 0, 0, 0, 0, 0 };
+
+// Calibration function for sensors
+void calibration() {
+  if (millis() - lastCalibrationTime > calibrationTime) {
+    int aux = m1Speed;
+    m1Speed = m2Speed;
+    m2Speed = aux;
+
+    m1Speed = constrain(m1Speed, -100, maxSpeed);
+    m2Speed = constrain(m2Speed, -100, maxSpeed);
+    setMotorSpeed(m1Speed, m2Speed);
+
+    lastCalibrationTime = millis();
   }
+}
 
-  // Function to add an element to the end of the queue
-  void enqueue(T value) {
-    Node* newNode = new Node(value);
-    if (!rear) {
-      front = rear = newNode;
-    } else {
-      rear->next = newNode;
-      rear = newNode;
-    }
-    size++;
-  }
-
-  // Function to remove and return an element from the front of the queue
-  T dequeue() {
-    if (isEmpty()) {
-      return T();
-    }
-    T result = front->data;
-    Node* temp = front;
-    front = front->next;
-    if (!front) {
-      rear = nullptr;
-    }
-    delete temp;
-    size--;
-    return result;
-  }
-
-  // Function to return the front element without removing it
-  T getFront() const {
-    if (isEmpty()) {
-      return T();
-    }
-    return front->data;
-  }
-
-  // Check if the queue is empty
-  bool isEmpty() const {
-    return !front;
-  }
-
-  // Get the current size of the queue
-  int getSize() const {
-    return size;
-  }
-};
-
-// Constants for different pins
-const int floorLEDs[] = { 2, 3, 4 };
-const int operationLED = 5;
-const int buttonPins[] = { 6, 7, 8 };
-const int buzzer = 9;
-
-// Elevator state variables
-int currentFloor = 0;
-bool isMoving = false;
-Queue<int> floorQueue;
-volatile bool toggleLED = false;
-bool operationLEDState = LOW;
-
-// Debouncing variables for button press handling
-unsigned long lastDebounceTime[3] = {0, 0, 0}; 
-const long debounceDelay = 50;
-
-// Timing variables for elevator motion and blinking
-unsigned long previousMillis = 0;
-unsigned long elevatorMoveMillis = 0;
-unsigned long blinkDelay = 300;
-const long floorDelay = 2000;
-bool startMoveDelayOver = false;
-unsigned long startMoveDelayStart = 0;
-const long startMoveDelayDuration = 2000;
-unsigned long beepDuration = 100;
-unsigned long beepFreq = 2000;
-unsigned long movFreq = 1000;
-
-// ISR functions to handle button presses
-void handleButtonPress(int buttonIndex);
-
-void buttonISR_1() { handleButtonPress(0); }
-void buttonISR_2() { handleButtonPress(1); }
-void buttonISR_3() { handleButtonPress(2); }
-
-void (*buttonISR[3])() = {buttonISR_1, buttonISR_2, buttonISR_3};
-
-// Setup function for Arduino initialization
+// Initial setup function
 void setup() {
+  // Setting pin modes for motor control
+  pinMode(m11Pin, OUTPUT);
+  pinMode(m12Pin, OUTPUT);
+  pinMode(m21Pin, OUTPUT);
+  pinMode(m22Pin, OUTPUT);
+  pinMode(m1Enable, OUTPUT);
+  pinMode(m2Enable, OUTPUT);
+
+  // Sensor type configuration
+  qtr.setTypeAnalog();
+  qtr.setSensorPins((const uint8_t[]){ A0, A1, A2, A3, A4, A5 }, sensorCount);
+
+  delay(500);
+
+  // Indicate calibration mode
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+
+  // Start sensor calibration
+  m1Speed = 125;
+  m2Speed = -125;
+  lastCalibrationTime = millis();
+  for (uint16_t i = 0; i < 150; i++) {
+    qtr.calibrate();
+    calibration();
+  }
+
+  // Reset motor speeds after calibration
+  m1Speed = 0;
+  m2Speed = 0;
+
+  // Exit calibration mode
+  digitalWrite(LED_BUILTIN, LOW);
+
+  // Start serial communication
   Serial.begin(9600);
-
-  // Set LED pins as output
-  for (int i = 0; i < 3; i++) {
-    pinMode(floorLEDs[i], OUTPUT);
-  }
-  pinMode(operationLED, OUTPUT);
-  digitalWrite(floorLEDs[0], HIGH);
-  digitalWrite(operationLED, HIGH);
-
-  // Set button pins as input and attach interrupts
-  for (int i = 0; i < 3; i++) {
-    pinMode(buttonPins[i], INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(buttonPins[i]), buttonISR[i], RISING);
-  }
 }
 
-bool pendingMove = false;
-int targetFloor = -1;
-
-// Main loop
+// Main control loop
 void loop() {
-  // Check each button for presses, and enqueue if necessary
-  for (int i = 0; i < 3; i++) {
-    int reading = digitalRead(buttonPins[i]);
-    if (reading == LOW) { 
-      if ((millis() - lastDebounceTime[i]) > debounceDelay) {
-        if (i != currentFloor) {
-          floorQueue.enqueue(i);
-          Serial.println("Button for floor " + String(i + 1) + " pressed.");
-        }
-      }
-      lastDebounceTime[i] = millis();
-    }
+  // Read sensors and calculate error
+  error = map(qtr.readLineBlack(sensorValues), 0, 5000, -50, 50);
+
+  // PID error components
+  p = error;
+  i = i + error;
+  d = error - lastError;
+
+  // Compute motor speed based on PID output
+  int motorSpeed = kp * p + ki * i + kd * d;
+  m1Speed = baseSpeed;
+  m2Speed = baseSpeed;
+
+  // Adjust motor speeds based on error direction
+  if (error < 0) {
+    m1Speed += motorSpeed;
+  } else if (error > 0) {
+    m2Speed -= motorSpeed;
   }
 
-  // Handle the case when the elevator is not currently moving to a target
-  if (!pendingMove && !floorQueue.isEmpty()) {
-    targetFloor = floorQueue.dequeue();
-    isMoving = true;
-    pendingMove = true;
-    startMoveDelayOver = false;
-    startMoveDelayStart = millis();
-    tone(buzzer, 1000,100);
-  }
-
-  if (pendingMove) {
-    moveElevatorStep(targetFloor);
-  }
+  // Constrain motor speeds to prevent exceeding limits
+  m1Speed = constrain(m1Speed, -100, maxSpeed);
+  m2Speed = constrain(m2Speed, -100, maxSpeed);
+  setMotorSpeed(m1Speed, m2Speed);
 }
 
-// Function to enqueue the floor request on button press
-void handleButtonPress(int buttonIndex) {
-  if ((millis() - lastDebounceTime[buttonIndex]) > debounceDelay) {
-    floorQueue.enqueue(buttonIndex + 1);
-    toggleLED = true;
-  }
-  lastDebounceTime[buttonIndex] = millis();
+// PID control logic
+void pidControl() {
+  // Calculate PID terms
+  float pTerm = kp * error;
+  i += error;
+  float iTerm = ki * i;
+  float dTerm = kd * (error - lastError);
+
+  // Combine PID terms
+  int pidValue = pTerm + iTerm + dTerm;
+
+  // Update error value
+  lastError = error;
+
+  // Apply PID to motors
+  applyPIDToMotors(pidValue);
 }
 
-unsigned long floorPauseStart = 0;
-bool inFloorPause = false;
+// Apply PID adjustments to motor speeds
+void applyPIDToMotors(int pidValue) {
+  m1Speed = baseSpeed - pidValue;
+  m2Speed = baseSpeed + pidValue;
 
-// Function to move the elevator one step at a time
-void moveElevatorStep(int targetFloor) {
-  unsigned long currentMillis = millis();
+  // Ensure motor speeds are within bounds
+  m1Speed = constrain(m1Speed, minSpeed, maxSpeed);
+  m2Speed = constrain(m2Speed, minSpeed, maxSpeed);
 
-  // Blink the operation LED
-  if (currentMillis - previousMillis >= blinkDelay) {
-    previousMillis = currentMillis;
-    operationLEDState = !operationLEDState;
-    digitalWrite(operationLED, operationLEDState);
-  }
+  // Set motor speeds
+  setMotorSpeed(m1Speed, m2Speed);
+}
 
-  // Wait before starting the elevator movement
-  if (!startMoveDelayOver && (currentMillis - startMoveDelayStart) < startMoveDelayDuration) {        
-    return;
+// Set the speed of motors
+void setMotorSpeed(int motor1Speed, int motor2Speed) {
+  // Control motor direction and speed
+  if (motor1Speed == 0) {
+    digitalWrite(m11Pin, LOW);
+    digitalWrite(m12Pin, LOW);
+    analogWrite(m1Enable, motor1Speed);
   } else {
-    startMoveDelayOver = true;
-  }
-
-  tone(buzzer,moveFreq);
-  int floorDirection = targetFloor > currentFloor ? 1 : -1;
-
-  // Pause at the floor before proceeding
-  if (inFloorPause) {
-    if (currentMillis - floorPauseStart >= floorDelay) {
-      inFloorPause = false;
+    if (motor1Speed > 0) {
+      digitalWrite(m11Pin, HIGH);
+      digitalWrite(m12Pin, LOW);
+      analogWrite(m1Enable, motor1Speed);
     }
-    return;
+    if (motor1Speed < 0) {
+      digitalWrite(m11Pin, LOW);
+      digitalWrite(m12Pin, HIGH);
+      analogWrite(m1Enable, -motor1Speed);
+    }
   }
-
-  // Move the elevator one floor after a delay
-  if (currentMillis - elevatorMoveMillis >= floorDelay*2) {
-    digitalWrite(floorLEDs[currentFloor], LOW);
-    currentFloor += floorDirection;
-    digitalWrite(floorLEDs[currentFloor], HIGH);
-    elevatorMoveMillis = currentMillis;
-  }
-
-  noTone(buzzer);
-
-  // Handle the elevator reaching the target floor
-  if (currentFloor == targetFloor && !inFloorPause) {
-    pendingMove = false;
-    isMoving = false;
-    tone(buzzer, beepFreq, beepDuration);
-    operationLEDState = HIGH;
-    digitalWrite(operationLED, operationLEDState);
-    inFloorPause = true;
-    floorPauseStart = currentMillis;
+  if (motor2Speed == 0) {
+    digitalWrite(m21Pin, LOW);
+    digitalWrite(m22Pin, LOW);
+    analogWrite(m2Enable, motor2Speed);
+  } else {
+    if (motor2Speed > 0) {
+      digitalWrite(m21Pin, HIGH);
+      digitalWrite(m22Pin, LOW);
+      analogWrite(m2Enable, motor2Speed);
+    }
+    if (motor2Speed < 0) {
+      digitalWrite(m21Pin, LOW);
+      digitalWrite(m22Pin, HIGH);
+      analogWrite(m2Enable, -motor2Speed);
+    }
   }
 }
