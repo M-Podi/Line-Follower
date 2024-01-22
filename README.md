@@ -75,7 +75,7 @@ https://github.com/M-Podi/Line-Follower/assets/114012309/eba157be-2c82-4c87-be53
 
 
 ### Academic Context
-This Line Follower Robot project was developed as part of the Introduction to Robotics course at UB-FMI.
+This Line Follower Robot project was developed as part of the Introduction to Robotics course at UB-FMI taught by Andrei Dumitriu.
 
 ### Team
 The project was undertaken by Team "DarkerThanAsphalt", consisting of three participants:
