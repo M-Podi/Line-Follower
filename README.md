@@ -23,8 +23,8 @@ This repository contains the Arduino setup and code for a line follower robot. T
 4. **Calibrate Sensors**: Place the robot on the track, power it on, and allow it to calibrate its sensors. The built-in LED indicates the calibration mode.
 5. **Start the Robot**: Once calibration is complete, the robot will start following the line.
 
+## PID Description
 <details>
-<summary>PID Description</summary>
 
 **PID (Proportional-Integral-Derivative)** control is a widely used control loop feedback mechanism in automation and robotics, including line follower robots. Here's a brief explanation of how it works and the significance of its values:
 
@@ -45,8 +45,9 @@ The PID values (kp, ki, kd) need to be tuned according to your specific setup, a
 
 </details>
 
+## Functions Description
+
 <details>
-<summary>Functions Description</summary>
 
 ### calibration()
 **Purpose**: Manages the calibration process of the robot.
