@@ -5,13 +5,21 @@ This repository contains the Arduino setup and code for a line follower robot. T
 ## Setup
 
 ### Components
-- Arduino Board (e.g., Arduino Uno)
-- QTR-8RC Reflectance Sensor Array
-- 2x DC Gear Motors
-- Motor Driver (e.g., L298N)
-- Chassis with wheels
-- Battery pack (suitable for motor and Arduino power requirements)
-- Jumper wires
+
+To build the Line Follower Robot, you will need the following components:
+
+1. **Arduino Uno**: Serves as the main controller for the robot.
+2. **DC Motors (2)**: These motors drive the robot's wheels.
+3. **Wheels (2)**: Attached to the DC motors for movement.
+4. **L293D Motor Driver**: Interfaces the DC motors with the Arduino Uno.
+5. **QTR-8A Reflectance Sensor Array**: Used for line detection.
+6. **Power Source**: In this setup, a LiPo battery is used.
+7. **Chassis**: The base structure to which all components are attached.
+8. **Ball Caster**: Provides support and balance to the robot.
+9. **Breadboard**: Used for assembling the circuit.
+10. **Wires**: To connect the components.
+11. **Zip-ties**: For securing components to the chassis.
+12. **Screws**: For mounting the QTR-8A reflectance sensor.
 
 ### Circuit View
 
