@@ -1,4 +1,3 @@
-
 # Line Follower Robot
 
 This repository contains the Arduino setup and code for a line follower robot. The robot uses PID control to follow a line and is capable of self-calibration for optimal performance.
@@ -24,7 +23,8 @@ This repository contains the Arduino setup and code for a line follower robot. T
 4. **Calibrate Sensors**: Place the robot on the track, power it on, and allow it to calibrate its sensors. The built-in LED indicates the calibration mode.
 5. **Start the Robot**: Once calibration is complete, the robot will start following the line.
 
-### PID Description
+<details>
+<summary>PID Description</summary>
 
 **PID (Proportional-Integral-Derivative)** control is a widely used control loop feedback mechanism in automation and robotics, including line follower robots. Here's a brief explanation of how it works and the significance of its values:
 
@@ -43,7 +43,10 @@ Value Explanation: A high derivative gain can help anticipate and dampen the ove
 #### Tuning PID Values
 The PID values (kp, ki, kd) need to be tuned according to your specific setup, as different robots will have different dynamics. Factors like the weight of the robot, friction of the surface, motor characteristics, and sensor placement all influence the ideal PID settings.
 
-## Functions Description
+</details>
+
+<details>
+<summary>Functions Description</summary>
 
 ### calibration()
 **Purpose**: Manages the calibration process of the robot.
@@ -68,3 +71,5 @@ The PID values (kp, ki, kd) need to be tuned according to your specific setup, a
 ### setMotorSpeed(int motor1Speed, int motor2Speed)
 **Purpose**: Controls the speed and direction of the motors.
 **Description**: Takes the desired speed for each motor and applies it, including handling the direction of rotation. It ensures that if a motor is set to 0 speed, it stops, and if the speed is positive or negative, it sets the rotation direction accordingly.
+
+</details>
