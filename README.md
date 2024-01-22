@@ -68,3 +68,18 @@ To build the Line Follower Robot, you will need the following components:
 **Description**: Takes the desired speed for each motor and applies it, including handling the direction of rotation. It ensures that if a motor is set to 0 speed, it stops, and if the speed is positive or negative, it sets the rotation direction accordingly.
 
 </details>
+
+## Project Overview
+
+### Academic Context
+This Line Follower Robot project was developed as part of the INTRODUCTION TO ROBOTICS course.
+
+### Team
+The project was undertaken by Team "DarkerThanAsphalt", consisting of three participants:
+- [Robert Schmidt](https://github.com/Robstoner)
+- [Horia Marinescu](https://github.com/Hvdri)
+- [Matei Podeanu](https://github.com/M-Pod)
+
+### Achievement
+A highlight of this project was finishing the circuit in **17.6 seconds**, showcasing the effectiveness of our PID control algorithm and the precision of our robot's design and calibration.
+
