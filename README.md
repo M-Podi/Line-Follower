@@ -25,7 +25,8 @@ This repository contains the Arduino setup and code for a line follower robot. T
 
 ## PID Description
 <details>
-
+<summary> </summary>
+  
 **PID (Proportional-Integral-Derivative)** control is a widely used control loop feedback mechanism in automation and robotics, including line follower robots. Here's a brief explanation of how it works and the significance of its values:
 
 #### Proportional (P):
@@ -48,6 +49,7 @@ The PID values (kp, ki, kd) need to be tuned according to your specific setup, a
 ## Functions Description
 
 <details>
+<summary> </summary>
 
 ### calibration()
 **Purpose**: Manages the calibration process of the robot.
