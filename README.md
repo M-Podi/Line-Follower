@@ -1,4 +1,4 @@
-# Line Follower Robot
+# Line Follower Robot - DarkerThanAsphalt - 17.6s
 
 This repository contains the Arduino setup and code for a line follower robot. The robot uses PID control to follow a line and is capable of self-calibration for optimal performance.
 
@@ -58,16 +58,6 @@ Below is the circuit diagram of the Line Follower Robot:
 
 **Description**: Continuously reads sensor values and calculates the error for line tracking. It also executes the PID control by adjusting motor speeds based on this error.
 
-### pidControl()
-**Purpose**: Implements the PID control logic.
-
-**Description**: Calculates the proportional, integral, and derivative terms based on the current error and the PID constants (kp, ki, kd). It then combines these to compute the overall PID value and applies this value to adjust the motors' speeds.
-
-### applyPIDToMotors(int pidValue)
-**Purpose**: Applies the PID value to the motors.
-
-**Description**: Adjusts the speed of each motor based on the PID value while ensuring the speeds are within the defined limits. It calls setMotorSpeed to apply these adjustments.
-
 ### setMotorSpeed(int motor1Speed, int motor2Speed)
 **Purpose**: Controls the speed and direction of the motors.
 
@@ -85,7 +75,7 @@ https://github.com/M-Podi/Line-Follower/assets/114012309/eba157be-2c82-4c87-be53
 
 
 ### Academic Context
-This Line Follower Robot project was developed as part of the INTRODUCTION TO ROBOTICS course.
+This Line Follower Robot project was developed as part of the Introduction to Robotics course at UB-FMI taught by Andrei Dumitriu.
 
 ### Team
 The project was undertaken by Team "DarkerThanAsphalt", consisting of three participants:
