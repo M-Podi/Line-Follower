@@ -122,37 +122,6 @@ void loop() {
   setMotorSpeed(m1Speed, m2Speed);
 }
 
-// PID control logic
-void pidControl() {
-  // Calculate PID terms
-  float pTerm = kp * error;
-  i += error;
-  float iTerm = ki * i;
-  float dTerm = kd * (error - lastError);
-
-  // Combine PID terms
-  int pidValue = pTerm + iTerm + dTerm;
-
-  // Update error value
-  lastError = error;
-
-  // Apply PID to motors
-  applyPIDToMotors(pidValue);
-}
-
-// Apply PID adjustments to motor speeds
-void applyPIDToMotors(int pidValue) {
-  m1Speed = baseSpeed - pidValue;
-  m2Speed = baseSpeed + pidValue;
-
-  // Ensure motor speeds are within bounds
-  m1Speed = constrain(m1Speed, minSpeed, maxSpeed);
-  m2Speed = constrain(m2Speed, minSpeed, maxSpeed);
-
-  // Set motor speeds
-  setMotorSpeed(m1Speed, m2Speed);
-}
-
 // Set the speed of motors
 void setMotorSpeed(int motor1Speed, int motor2Speed) {
   // Control motor direction and speed
