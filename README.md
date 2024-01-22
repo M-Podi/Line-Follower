@@ -4,6 +4,8 @@ This repository contains the Arduino setup and code for a line follower robot. T
 
 ## Setup
 
+![Line Follower setup](https://github.com/M-Podi/Line-Follower/assets/114012309/3758c6df-7367-4e03-920e-204fb7cc0cbd)
+
 ### Components
 
 To build the Line Follower Robot, you will need the following components:
@@ -22,6 +24,10 @@ To build the Line Follower Robot, you will need the following components:
 12. **Screws**: For mounting the QTR-8A reflectance sensor.
 
 ### Circuit View
+
+Below is the circuit diagram of the Line Follower Robot:
+
+![Circuit View](https://github.com/M-Podi/Line-Follower/assets/114012309/5fecd379-6ca1-4202-a485-d3e7b81b9a5b)
 
 
 ## How to Use
@@ -70,6 +76,12 @@ To build the Line Follower Robot, you will need the following components:
 </details>
 
 ## Project Overview
+
+### Proof that it worked
+
+
+https://github.com/M-Podi/Line-Follower/assets/114012309/237f0757-5336-413f-9de0-320e35392f0d
+
 
 ### Academic Context
 This Line Follower Robot project was developed as part of the INTRODUCTION TO ROBOTICS course.
