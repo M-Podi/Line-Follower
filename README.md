@@ -75,12 +75,13 @@ Below is the circuit diagram of the Line Follower Robot:
 
 </details>
 
+## Proof that it worked
+
+
+https://github.com/M-Podi/Line-Follower/assets/114012309/eba157be-2c82-4c87-be53-6f211740c544
+
+
 ## Project Overview
-
-### Proof that it worked
-
-
-https://github.com/M-Podi/Line-Follower/assets/114012309/237f0757-5336-413f-9de0-320e35392f0d
 
 
 ### Academic Context
